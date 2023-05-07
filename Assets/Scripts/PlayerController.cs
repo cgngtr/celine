@@ -91,9 +91,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void Jump(float JumpForce)
+    public void Jump(float JumpForce, bool overpower)
     {
-        if (_CoyoteTime)
+        //overpower true ise coyotime degerini bypass ediyor.
+        if (_CoyoteTime || overpower == true)
         {
             _Rigid2D.AddForce(new Vector2(_Rigid2D.velocity.x, JumpForce));
         }
