@@ -16,7 +16,6 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-
         if (Input.GetButtonDown("Jump"))
         {
             _playerController.Jump(JumpPower);

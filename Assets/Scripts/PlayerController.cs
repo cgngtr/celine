@@ -4,16 +4,20 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-	public Rigidbody2D _Rigid2D = new Rigidbody2D(); //YOk ARTIIK RIGIDBODY!!! @Han
+	private Rigidbody2D _Rigid2D = new Rigidbody2D(); //YOk ARTIIK RIGIDBODY!!! @Han
 
     [Range(0, .3f)][SerializeField] private float _MovementSmoothing = .05f; //Daha Yumusak Gitmesini Sagliyo bu deger. @Han
+    [Range(0, 1f)][SerializeField] private float _MaxCoyoteTimeValue = 0.3f;
+    [Range(0, 5)][SerializeField] private int _MaxJumpCount = 1;
     [SerializeField] private LayerMask _GroundLayers; //Ground Layerlari
     [SerializeField] private Transform m_GroundCheck; 
 
 
     private Vector3 _Velocity = Vector3.zero; //bu neden burda bilmiyom bosver bunu. @Han
     public bool _Grounded; //Karakterin Ground Layer  olan objelere Dokunup Dokunmadigini Gosteren Deger. @Han
-    char _pastDirection = 'R';
+    public bool _CoyoteTime; //coyote time 
+    private float coyoteTimeValue = 0.3f;
+    public int JumpCount = 1;
 
     void Start()
     {
@@ -22,17 +26,34 @@ public class PlayerController : MonoBehaviour
 
 	private void FixedUpdate()
 	{
-        bool wasGrounded = _Grounded;
-        _Grounded = false;
-
         Collider2D[] colliders = Physics2D.OverlapCircleAll(m_GroundCheck.position, 0.2f, _GroundLayers);
+        //Burasi Karakter Ground Layerlarina degiyorsa Calisiyor @Han
+        // | | | |
+        // v v v v 
         for (int i = 0; i < colliders.Length; i++)
         {
             if (colliders[i].gameObject != gameObject)
             {
                 _Grounded = true;
+                _CoyoteTime = true;
+                coyoteTimeValue = _MaxCoyoteTimeValue;
+                JumpCount = _MaxJumpCount;  
             }
         }
+
+        //Burasi Karakter Ground Layerlarina degmiyorsa Calisiyor @Han
+        // | | | |
+        // v v v v 
+        if (colliders.Length <= 0)
+        {
+            _Grounded = false;
+            coyoteTimeValue -= 1 * Time.deltaTime;
+            print(coyoteTimeValue);
+            if (coyoteTimeValue < 0f)
+            {
+                _CoyoteTime = false;
+            }
+        } 
     }
 
 	public void Move(float moveSpeed)
@@ -74,8 +95,9 @@ public class PlayerController : MonoBehaviour
 
     public void Jump(float JumpForce)
     {
-        if (_Grounded)
+        if (_CoyoteTime && JumpCount > 0)
         {
+            JumpCount -= 1;
             _Rigid2D.AddForce(new Vector2(_Rigid2D.velocity.x, JumpForce));
         }
     }
