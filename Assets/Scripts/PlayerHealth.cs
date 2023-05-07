@@ -2,17 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AnimManager : MonoBehaviour
-{ 
-    Animator _animator;
+public class PlayerHealth : MonoBehaviour
+{
+
     void Start()
     {
         
     }
 
-    // Update is called once per frame
     void Update()
     {
         
+    }
+    public void TakeDamage(int damage)
+    {
+        // Sadece diger scriptten erisebilmek icin olusturdum.
     }
 }

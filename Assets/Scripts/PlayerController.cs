@@ -58,8 +58,8 @@ public class PlayerController : MonoBehaviour
 	{
 		if (_Grounded)
 		{
-            // Hedef Vecolityi bul. @Han
-            Vector3 targetVelocity = new Vector2(moveSpeed * 10f, _Rigid2D.velocity.y);
+            // Hedef Velocityi bul. @Han
+            Vector3 targetVelocity = new Vector2(moveSpeed * 10f, _Rigid2D.velocity.y); // Hedef velocity'den kasit ne @cag
             // Buldugun Velocitiyi SmoothDamp ile uygula. @Han
             _Rigid2D.velocity = Vector3.SmoothDamp(_Rigid2D.velocity, targetVelocity, ref _Velocity, _MovementSmoothing);
 
