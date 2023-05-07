@@ -1275,6 +1275,7 @@ MonoBehaviour:
   _playerController: {fileID: 0}
   runSpeed: 40
   JumpPower: 280
+  JumpCount: 0
   _MaxJumpCount: 2
 --- !u!61 &1398706132
 BoxCollider2D:
@@ -1364,7 +1365,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 207554512, guid: 6d00c37152d3b204bb5767f3be005212, type: 3}
+  m_Sprite: {fileID: 1683671254, guid: 1fde3b37f6b8e814098abee66cef1c05, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
