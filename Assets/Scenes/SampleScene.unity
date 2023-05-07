@@ -1275,6 +1275,7 @@ MonoBehaviour:
   _playerController: {fileID: 0}
   runSpeed: 40
   JumpPower: 280
+  _MaxJumpCount: 2
 --- !u!61 &1398706132
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1411,7 +1412,6 @@ MonoBehaviour:
   m_GroundCheck: {fileID: 1284993436}
   _Grounded: 1
   _CoyoteTime: 0
-  JumpCount: 1
 --- !u!95 &1398706137
 Animator:
   serializedVersion: 5

@@ -8,8 +8,8 @@ public class PlayerMovement : MonoBehaviour
     float horizontalMove = 0f;
     public float runSpeed = 40f;
     [Range(0, 1000f)][SerializeField] private float JumpPower = 400f;
-    private int JumpCount;
-    [Range(0, 1000f)][SerializeField] private int _MaxJumpCount = 2;
+    [SerializeField] private int JumpCount;
+    [Range(0, 10)][SerializeField] private int _MaxJumpCount;
 
     void Start()
     {
@@ -26,7 +26,7 @@ public class PlayerMovement : MonoBehaviour
                 JumpCount = _MaxJumpCount;
             }
 
-            if (JumpCount <= _MaxJumpCount - 1) {
+            if (JumpCount <= _MaxJumpCount - 1 && JumpCount > 0) {
                 _playerController.Jump(JumpPower, true);
                 JumpCount--;
             }
