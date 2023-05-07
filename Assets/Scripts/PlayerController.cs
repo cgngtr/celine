@@ -17,14 +17,13 @@ public class PlayerController : MonoBehaviour
     public bool _Grounded; //Karakterin Ground Layer  olan objelere Dokunup Dokunmadigini Gosteren Deger. @Han
     public bool _CoyoteTime; //coyote time 
     private float coyoteTimeValue = 0.3f;
-    public int JumpCount = 1;
 
     void Start()
     {
         _Rigid2D = GetComponent<Rigidbody2D>();
     }
 
-	private void FixedUpdate()
+    private void FixedUpdate()
 	{
         Collider2D[] colliders = Physics2D.OverlapCircleAll(m_GroundCheck.position, 0.2f, _GroundLayers);
         //Burasi Karakter Ground Layerlarina degiyorsa Calisiyor @Han
@@ -37,7 +36,6 @@ public class PlayerController : MonoBehaviour
                 _Grounded = true;
                 _CoyoteTime = true;
                 coyoteTimeValue = _MaxCoyoteTimeValue;
-                JumpCount = _MaxJumpCount;  
             }
         }
 
@@ -48,12 +46,12 @@ public class PlayerController : MonoBehaviour
         {
             _Grounded = false;
             coyoteTimeValue -= 1 * Time.deltaTime;
-            print(coyoteTimeValue);
             if (coyoteTimeValue < 0f)
             {
                 _CoyoteTime = false;
+
             }
-        } 
+        }
     }
 
 	public void Move(float moveSpeed)
@@ -95,9 +93,8 @@ public class PlayerController : MonoBehaviour
 
     public void Jump(float JumpForce)
     {
-        if (_CoyoteTime && JumpCount > 0)
+        if (_CoyoteTime)
         {
-            JumpCount -= 1;
             _Rigid2D.AddForce(new Vector2(_Rigid2D.velocity.x, JumpForce));
         }
     }

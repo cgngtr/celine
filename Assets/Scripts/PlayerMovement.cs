@@ -8,6 +8,7 @@ public class PlayerMovement : MonoBehaviour
     float horizontalMove = 0f;
     public float runSpeed = 40f;
     [Range(0, 1000f)][SerializeField] private float JumpPower = 400f;
+    int JumpCount = 1;
 
     void Start()
     {
@@ -18,7 +19,10 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetButtonDown("Jump"))
         {
-            _playerController.Jump(JumpPower);
+            if (JumpCount > 0) {
+                _playerController.Jump(JumpPower);
+                JumpCount--;
+            }
         }
 
     }
