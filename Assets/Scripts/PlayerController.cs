@@ -92,7 +92,7 @@ public class PlayerController : MonoBehaviour
         }
         else if(direction == 'R')
         {
-            Vector3 theScale = transform.localScale;
+            Vector3 theScale =  transform.localScale;
             theScale.x = 1;
             transform.localScale = theScale;
         }
