@@ -1,13 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PlayerCombat : MonoBehaviour
 {
     private Animator animator;
-    [Range(0, 5f)][SerializeField] private float _AttackRange = 1.4f;
+    [Range(0, 5f)][SerializeField] private float _AttackRange = 1.4f; //mouseun icinde olupta attack yapabilecegii maksimum menzil
+    [Range(0, 2f)][SerializeField] private float mouseSnapRange = 0.2f; //mouseun etrafindaki alan
+    [SerializeField] private LayerMask MouseRange;
     [SerializeField] private LayerMask _EnemyLayers;
     [Range(0, 10)][SerializeField] private int AttackDamage;
+
+    public Vector3 worldPositionofMouse;
 
     private void Start()
     {
@@ -17,6 +22,18 @@ public class PlayerCombat : MonoBehaviour
 
     void Update()
     {
+
+
+        // Get the position of the mouse in screen space
+        Vector3 mousePosition = Input.mousePosition;
+
+        // Set the z coordinate to the distance from the camera to the game object
+        mousePosition.z = -Camera.main.transform.position.z;
+
+        // Convert the position from screen space to world space
+        worldPositionofMouse = Camera.main.ScreenToWorldPoint(mousePosition);
+
+
 
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
@@ -28,29 +45,35 @@ public class PlayerCombat : MonoBehaviour
             // Play an attack animation
             animator.SetTrigger("Attack");
 
-            // Detect enemies in range of attack
-            Collider2D[] EnemiesInRange = Physics2D.OverlapCircleAll(transform.position, _AttackRange, _EnemyLayers);
-     
-            for (int i = 0; i < EnemiesInRange.Length; i++)
+            //Bu attack range mouse bunun disindayken attack komutu calismiyor.
+            Collider2D[] AttackRangeLimit = Physics2D.OverlapCircleAll(transform.position, _AttackRange);
+            //buda mousein kendi icindeki alani attack yapmak icin. buyuk bir alan varki oyuncu biraz kenara bile tiklasa dusmana atak yapsin
+            Collider2D[] enemiesInRangeOfMouse = Physics2D.OverlapCircleAll(worldPositionofMouse, mouseSnapRange, _EnemyLayers);
+
+
+            foreach (Collider2D collider in AttackRangeLimit)
             {
-                if (EnemiesInRange[i].gameObject != gameObject && EnemiesInRange[i].gameObject.tag == "Enemy") //Circlein Carptigi gameobject kendisi degilse ve Tagi Enemy ise vurma efekti 
+                //Burda hem rangein hemde mouse alaninin icinde mi diye kontrol ediyor.
+                if (enemiesInRangeOfMouse.Contains(collider))
                 {
-                    EnemyHealth enemyHeatlh = EnemiesInRange[i].gameObject.GetComponent<EnemyHealth>();
-                    enemyHeatlh.GetHit(AttackDamage, this.gameObject);
+                    EnemyHealth enemyHealth = collider.gameObject.GetComponent<EnemyHealth>();
+                    enemyHealth.GetHit(AttackDamage, this.gameObject);
                 }
             }
-            
-            if (EnemiesInRange.Length <= 0) //Circle carpmazsa 
+
+            if (AttackRangeLimit.Length <= 0) //Circle carpmazsa 
             {
                 Debug.Log("No Enemies in Range");
             }
-
         }
     }
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.red;
+        //burasi editorde attack range ve mouse rangi gormek icin kodlari bulunduruyor
+        Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(transform.position, _AttackRange);
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(worldPositionofMouse, mouseSnapRange);
     }
 }
