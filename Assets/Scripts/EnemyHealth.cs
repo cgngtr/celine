@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class EnemyHealth : MonoBehaviour
 {
-    [Range(1, 100)][SerializeField] int HealthPoints = 2;
-    [Range(1, 100)][SerializeField] float KnockbackForce = 20;
+    [Range(1, 100)][SerializeField] int HealthPoints = 2; //enemy cani
+    [Range(1, 5)][SerializeField] float KnockbackForce = 3;  //geri atlama kuveti
     Rigidbody2D rb = new Rigidbody2D();
+    [SerializeField] private bool Armored = false; //ilerde armored enemy koyariz diye
 
     public void Awake()
     {
@@ -19,19 +20,28 @@ public class EnemyHealth : MonoBehaviour
 
         if(HealthPoints <= 0)
         {
-            Destroy(this.gameObject);
+            Destroy(this.gameObject); //can sifirsa vur gote
         }
         else
         {
-            KnockBack(Attacker.transform.position);
+            if (!Armored) {
+                KnockBack(Attacker.transform.position, Damage);
+            }
         }
     }
 
-    public void KnockBack(Vector3 attackerPosition)
+    public void KnockBack(Vector3 attackerPosition, int Damage)
     {
-        Vector3 knockbackDirection = transform.position - attackerPosition;
-        knockbackDirection.Normalize();
-        Vector3 knockbackForce = knockbackDirection * KnockbackForce;
-        rb.AddForce(knockbackForce, ForceMode2D.Impulse);
+        Vector3 knockbackDirection = transform.position - attackerPosition; //atagin nerden geldigini hesapla
+        knockbackDirection.Normalize();  //bu neden yapiliyo bilmiyorum ama koyunca cok daha guzel oldu
+
+        //Karakterin vurdugu hasara oranla knockbackforce artiyor
+        int damagePercent = Damage / 3;
+        float scaledKnockbackForce = KnockbackForce + damagePercent;
+
+        //yeni vektor tanimliyoruz force x direction ile.
+        Vector3 knockbackForce = knockbackDirection * scaledKnockbackForce;
+
+        rb.AddForce(knockbackForce, ForceMode2D.Impulse); //bum!
     }
 }
