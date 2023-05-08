@@ -36,7 +36,7 @@ public class PlayerCombat : MonoBehaviour
                 if (EnemiesInRange[i].gameObject != gameObject && EnemiesInRange[i].gameObject.tag == "Enemy") //Circlein Carptigi gameobject kendisi degilse ve Tagi Enemy ise vurma efekti 
                 {
                     EnemyHealth enemyHeatlh = EnemiesInRange[i].gameObject.GetComponent<EnemyHealth>();
-                    enemyHeatlh.GetHit(AttackDamage);
+                    enemyHeatlh.GetHit(AttackDamage, this.gameObject);
                 }
             }
             
