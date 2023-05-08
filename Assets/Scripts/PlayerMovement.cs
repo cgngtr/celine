@@ -19,6 +19,7 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
 
+
     void Start()
     {
         _playerController = GetComponent<PlayerController>();
@@ -64,4 +65,5 @@ public class PlayerMovement : MonoBehaviour
         horizontalMove = Input.GetAxisRaw("Horizontal") * runSpeed * Time.deltaTime;
         _playerController.Move(horizontalMove);
     }
+    
 }

@@ -1029,8 +1029,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c370a1b0d6dd33948ae2e4c16143bf2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HealthPoints: 2
-  KnockbackForce: 3
+  HealthPoints: 100
+  KnockbackForce: 2
   Armored: 0
 --- !u!61 &899411270
 BoxCollider2D:
@@ -1930,8 +1930,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d20b16c83f2dd0541bd15b88217dd414, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  runSpeed: 40
-  JumpPower: 280
+  runSpeed: 25
+  JumpPower: 200
   JumpCount: 0
   _MaxJumpCount: 2
 --- !u!61 &1398706132
@@ -2115,12 +2115,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _AttackRange: 1.4
-  _MouseSnapRange: 0.5
+  mouseSnapRange: 0.2
+  MouseRange:
+    serializedVersion: 2
+    m_Bits: 0
   _EnemyLayers:
     serializedVersion: 2
     m_Bits: 64
   AttackDamage: 1
-  worldPosition: {x: 0, y: 0, z: 0}
+  worldPositionofMouse: {x: 0, y: 0, z: 0}
 --- !u!1 &1551187266
 GameObject:
   m_ObjectHideFlags: 0

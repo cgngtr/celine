@@ -36,11 +36,11 @@ public class EnemyHealth : MonoBehaviour
         knockbackDirection.Normalize();  //bu neden yapiliyo bilmiyorum ama koyunca cok daha guzel oldu
 
         //Karakterin vurdugu hasara oranla knockbackforce artiyor
-        int damagePercent = Damage / 3;
+        float damagePercent = Damage / 5; // 4 oldugunda da degismesi icin float yaptim @cag
         float scaledKnockbackForce = KnockbackForce + damagePercent;
 
         //yeni vektor tanimliyoruz force x direction ile.
-        Vector3 knockbackForce = knockbackDirection * scaledKnockbackForce;
+        Vector3 knockbackForce = knockbackDirection * scaledKnockbackForce; // nice @cag
 
         rb.AddForce(knockbackForce, ForceMode2D.Impulse); //bum!
     }

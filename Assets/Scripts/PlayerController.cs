@@ -17,13 +17,34 @@ public class PlayerController : MonoBehaviour
     public bool _CoyoteTime; //coyote time 
     private float coyoteTimeValue = 0.3f;
 
+    #region Dash Values
+    [SerializeField] private bool canDash = true;
+    private bool isDashing;
+    [SerializeField] private float dashingPower = 24f;
+    [SerializeField] private float dashingTime = 0.2f;
+    [SerializeField] private float dashingCooldown = 1f;
+    #endregion
+
     void Start()
     {
         _Rigid2D = GetComponent<Rigidbody2D>();
     }
 
+    private void Update()
+    {
+        if (isDashing)
+        {
+            return;
+        }
+    }
+
     private void FixedUpdate()
 	{
+        if(isDashing)
+        {
+            return;
+        }
+
         Collider2D[] colliders = Physics2D.OverlapCircleAll(m_GroundCheck.position, 0.2f, _GroundLayers);
         //Burasi Karakter Ground Layerlarina degiyorsa Calisiyor @Han
         // | | | |
@@ -51,6 +72,11 @@ public class PlayerController : MonoBehaviour
 
             }
         }
+
+        if(Input.GetKeyDown(KeyCode.LeftShift) && canDash)
+        {
+            StartCoroutine(Dash());
+        }
     }
 
 	public void Move(float moveSpeed)
@@ -73,7 +99,7 @@ public class PlayerController : MonoBehaviour
 
 		}else if (!_Grounded)
         {
-            // Hedef Vecolityi bul. @Han
+            // Hedef Velocityi bul. @Han
             Vector3 targetVelocity = new Vector2(moveSpeed * 10f, _Rigid2D.velocity.y);
             // Buldugun Velocitiyi SmoothDamp ile uygula. @Han
             _Rigid2D.velocity = Vector3.SmoothDamp(_Rigid2D.velocity, targetVelocity, ref _Velocity, _MovementSmoothing);
@@ -116,5 +142,19 @@ public class PlayerController : MonoBehaviour
             transform.localScale = theScale;
         }
         
+    }
+    private IEnumerator Dash()
+    {
+        canDash = false;
+        isDashing = true;
+        float originalGravity = _Rigid2D.gravityScale;
+        _Rigid2D.gravityScale = 0f;
+        _Rigid2D.velocity = new Vector2(transform.localScale.x * dashingPower, 0f);
+        yield return new WaitForSeconds(dashingTime);
+        _Rigid2D.gravityScale = originalGravity;
+        isDashing = false;
+        yield return new WaitForSeconds(dashingCooldown);
+        canDash = true;
+
     }
 }
