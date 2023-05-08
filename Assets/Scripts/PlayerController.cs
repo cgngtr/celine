@@ -8,7 +8,6 @@ public class PlayerController : MonoBehaviour
 
     [Range(0, .3f)][SerializeField] private float _MovementSmoothing = .05f; //Daha Yumusak Gitmesini Sagliyo bu deger. @Han
     [Range(0, 1f)][SerializeField] private float _MaxCoyoteTimeValue = 0.3f;
-    [Range(0, 5)][SerializeField] private int _MaxJumpCount = 1;
     [SerializeField] private LayerMask _GroundLayers; //Ground Layerlari
     [SerializeField] private Transform m_GroundCheck; 
 
@@ -59,7 +58,7 @@ public class PlayerController : MonoBehaviour
 		if (_Grounded)
 		{
             // Hedef Velocityi bul. @Han
-            Vector3 targetVelocity = new Vector2(moveSpeed * 10f, _Rigid2D.velocity.y); // Hedef velocity'den kasit ne @cag
+            Vector3 targetVelocity = new Vector2(moveSpeed * 10f, _Rigid2D.velocity.y); //Karakterin Yatay Duzlemde Ulastigi Maksimum Hiz @Han
             // Buldugun Velocitiyi SmoothDamp ile uygula. @Han
             _Rigid2D.velocity = Vector3.SmoothDamp(_Rigid2D.velocity, targetVelocity, ref _Velocity, _MovementSmoothing);
 

@@ -4,27 +4,34 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public PlayerController _playerController;
-    public Animator animator;
-    public Rigidbody2D rb;
+    private PlayerController _playerController;
+    private Animator animator;
+
+    #region Horizontal Movement Values
     float horizontalMove = 0f;
     public float runSpeed = 40f;
-    public float KBForce; // KB kuvveti @cag
-    public float KBCounter; // KB efektinin ne kadar suresinin kaldigi @cag
-    public float KBTotalTime; // KB efektinin ne kadar surecegi @cag
-    public bool KnockFromRight; // knock'in alindigi yeri soyleyen bool @cag
+    #endregion
+
+    #region JumpValues
     [Range(0, 1000f)][SerializeField] private float JumpPower = 400f;
     [SerializeField] private int JumpCount;
     [Range(0, 10)][SerializeField] private int _MaxJumpCount;
-    
+    #endregion
+
 
     void Start()
     {
         _playerController = GetComponent<PlayerController>();
+        animator = GetComponent<Animator>();
         JumpCount = _MaxJumpCount;
     }
 
     void Update()
+    {
+        Jump();
+    }
+
+    private void Jump()
     {
         if (Input.GetButtonDown("Jump"))
         {
@@ -35,41 +42,26 @@ public class PlayerMovement : MonoBehaviour
                 animator.SetBool("IsJumping", false);
             }
 
-            if (JumpCount <= _MaxJumpCount - 1 && JumpCount > 0) {
+            if (JumpCount <= _MaxJumpCount - 1 && JumpCount > 0)
+            {
                 _playerController.Jump(JumpPower, true);
                 JumpCount--;
             }
-            else if(JumpCount > _MaxJumpCount - 1)
+            else if (JumpCount > _MaxJumpCount - 1)
             {
                 _playerController.Jump(JumpPower, false);
                 JumpCount--;
             }
         }
-
     }
 
     private void FixedUpdate()
     {
-        if(KBCounter <= 0) // sadece bu sayac bittiginde tekrar hareket edilebilecek
-        {
-            horizontalMove = Input.GetAxisRaw("Horizontal") * runSpeed * Time.deltaTime;
-        }
-        else
-        {
-            if(KnockFromRight)
-            {
-                rb.velocity = new Vector2(-KBForce, KBForce);
-            }
-            if(!KnockFromRight)
-            {
-                rb.velocity = new Vector2(KBForce, -KBForce);
-            }
-            KBCounter -= Time.deltaTime; // counting down @cag
-        }
-
-         // delta time'i buraya aldim cunku
-                                                                                     // horizontal move'u kullanmam lazim @ cag
-        animator.SetFloat("Speed", Mathf.Abs(horizontalMove)); // hiz - olunca mal olmamasi icin mathf'li @cag
+        // bu kodun animasyon manager adli scriptin icinde bulunmasi gerekiyor
+        // | | |
+        // V V V
+        //animator.SetFloat("Speed", Mathf.Abs(horizontalMove)); // hiz - olunca mal olmamasi icin mathf'li @cag 
+        horizontalMove = Input.GetAxisRaw("Horizontal") * runSpeed * Time.deltaTime;
         _playerController.Move(horizontalMove);
     }
 }
