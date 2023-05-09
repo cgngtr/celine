@@ -102,7 +102,6 @@ public class PlayerCombat : MonoBehaviour
     private Vector2 GetCollusionPoint(Vector2 mousePositionWorld)
     {
         Vector2 center = transform.position;
-        Vector2 direction = mousePositionWorld - center;
         float distance = Mathf.Min(direction.magnitude, _AttackRange);
 
         Vector2 collisionPoint = center + direction.normalized * distance;
@@ -111,9 +110,10 @@ public class PlayerCombat : MonoBehaviour
     }
 
 
+        Vector2 direction = mousePositionWorld - center;
     private void OnDrawGizmos()
     {
-        //burasi editorde attack range ve mouse rangi gormek icin kodlari bulunduruyor
+        //burasi editorde attack range ve mouse range'i gormek icin kodlari bulunduruyor
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(transform.position, _AttackRange);
         Gizmos.color = Color.red;
