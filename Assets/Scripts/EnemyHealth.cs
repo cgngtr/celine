@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class EnemyHealth : MonoBehaviour
 {
@@ -8,12 +9,13 @@ public class EnemyHealth : MonoBehaviour
     [Range(1, 5)][SerializeField] float KnockbackForce = 3;  //geri atlama kuveti
     Rigidbody2D rb = new Rigidbody2D();
     [SerializeField] private bool Armored = false; //ilerde armored enemy koyariz diye
+    public bool isBullet = false;
 
     public void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
     }
-    public void GetHit(int Damage, GameObject Attacker)
+    public void GetHit(int Damage, Vector3 Attacker)
     {
         HealthPoints -= Damage;
         Debug.Log("Enemy Health is " + HealthPoints);
@@ -25,9 +27,16 @@ public class EnemyHealth : MonoBehaviour
         else
         {
             if (!Armored) {
-                KnockBack(Attacker.transform.position, Damage);
+                Debug.Log("knockbacked");
+                KnockBack(Attacker, Damage);
             }
         }
+    }
+
+    public void GetDeflect(int Damage, Vector3 Attacker)
+    {
+        Debug.Log("Get Deflected");
+        KnockBack(Attacker, 6);
     }
 
     public void KnockBack(Vector3 attackerPosition, int Damage)
@@ -36,7 +45,7 @@ public class EnemyHealth : MonoBehaviour
         knockbackDirection.Normalize();  //bu neden yapiliyo bilmiyorum ama koyunca cok daha guzel oldu
 
         //Karakterin vurdugu hasara oranla knockbackforce artiyor
-        float damagePercent = Damage / 5; // 4 oldugunda da degismesi icin float yaptim @cag
+        float damagePercent = Damage / 5; 
         float scaledKnockbackForce = KnockbackForce + damagePercent;
 
         //yeni vektor tanimliyoruz force x direction ile.

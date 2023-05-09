@@ -8,8 +8,9 @@ public class PlayerCombat : MonoBehaviour
     private Animator animator;
     [Range(0, 5f)][SerializeField] private float _AttackRange = 1.4f; //mouseun icinde olupta attack yapabilecegii maksimum menzil
     [Range(0, 2f)][SerializeField] private float mouseSnapRange = 0.2f; //mouseun etrafindaki alan
-    [SerializeField] private LayerMask MouseRange;
-    [SerializeField] private LayerMask _EnemyLayers;
+    [Range(0, 2f)][SerializeField] private float deflectRange = 0.5f; //Deflect alani
+    [SerializeField] private LayerMask enemyLayers;
+    [SerializeField] private LayerMask bulletLayers;
     [Range(0, 10)][SerializeField] private int AttackDamage;
 
     public Vector3 worldPositionofMouse;
@@ -39,17 +40,20 @@ public class PlayerCombat : MonoBehaviour
         {
             Attack();
         }
+        if (Input.GetKeyDown(KeyCode.Mouse1))
+        {
+            Deflect();
+        }
 
     }
     public void Attack()
     {
         // Play an attack animation
         animator.SetTrigger("Attack");
-
         //Bu attack range mouse bunun disindayken attack komutu calismiyor.
         Collider2D[] AttackRangeLimit = Physics2D.OverlapCircleAll(transform.position, _AttackRange);
         //buda mousein kendi icindeki alani attack yapmak icin. buyuk bir alan varki oyuncu biraz kenara bile tiklasa dusmana atak yapsin
-        Collider2D[] enemiesInRangeOfMouse = Physics2D.OverlapCircleAll(worldPositionofMouse, mouseSnapRange, _EnemyLayers); // center, radius, checking layer @cag
+        Collider2D[] enemiesInRangeOfMouse = Physics2D.OverlapCircleAll(worldPositionofMouse, mouseSnapRange, enemyLayers); // center, radius, checking layer @cag
 
 
         foreach (Collider2D collider in AttackRangeLimit)
@@ -58,7 +62,7 @@ public class PlayerCombat : MonoBehaviour
             if (enemiesInRangeOfMouse.Contains(collider))
             {
                 EnemyHealth enemyHealth = collider.gameObject.GetComponent<EnemyHealth>();
-                enemyHealth.GetHit(AttackDamage, this.gameObject);
+                enemyHealth.GetHit(AttackDamage, this.gameObject.transform.position);
             }
         }
 
@@ -68,10 +72,37 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    private Vector2 GetCollusionPoint(Vector2 mousePosition)
+    public void Deflect()
+    {
+        // Play a deflect animation
+        //animator.SetTrigger("Deflect");
+        //Bu attack range mouse bunun disindayken attack komutu calismiyor.
+        Collider2D[] AttackRangeLimit = Physics2D.OverlapCircleAll(transform.position, _AttackRange);
+
+        //buda mousein kendi icindeki alani attack yapmak icin. buyuk bir alan varki oyuncu biraz kenara bile tiklasa dusmana atak yapsin
+        Collider2D[] bulletsInRangeOfMouse = Physics2D.OverlapCircleAll(GetCollusionPoint(worldPositionofMouse), deflectRange, bulletLayers); // center, radius, checking layer @cag
+
+        foreach (Collider2D collider in AttackRangeLimit)
+        {
+            //Burda hem rangein hemde mouse alaninin icinde mi diye kontrol ediyor.
+            if (bulletsInRangeOfMouse.Contains(collider))
+            {
+                EnemyHealth enemyHealth = collider.gameObject.GetComponent<EnemyHealth>();
+                enemyHealth.GetDeflect(AttackDamage, this.gameObject.transform.position);
+            }
+        }
+
+
+        if (AttackRangeLimit.Length <= 0) //Circle carpmazsa 
+        {
+            Debug.Log("No Bullets in Range");
+        }
+    }
+
+    private Vector2 GetCollusionPoint(Vector2 mousePositionWorld)
     {
         Vector2 center = transform.position;
-        Vector2 direction = mousePosition - center;
+        Vector2 direction = mousePositionWorld - center;
         float distance = Mathf.Min(direction.magnitude, _AttackRange);
 
         Vector2 collisionPoint = center + direction.normalized * distance;
