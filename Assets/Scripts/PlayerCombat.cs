@@ -40,33 +40,45 @@ public class PlayerCombat : MonoBehaviour
             Attack();
         }
 
-        void Attack()
+    }
+    public void Attack()
+    {
+        // Play an attack animation
+        animator.SetTrigger("Attack");
+
+        //Bu attack range mouse bunun disindayken attack komutu calismiyor.
+        Collider2D[] AttackRangeLimit = Physics2D.OverlapCircleAll(transform.position, _AttackRange);
+        //buda mousein kendi icindeki alani attack yapmak icin. buyuk bir alan varki oyuncu biraz kenara bile tiklasa dusmana atak yapsin
+        Collider2D[] enemiesInRangeOfMouse = Physics2D.OverlapCircleAll(worldPositionofMouse, mouseSnapRange, _EnemyLayers); // center, radius, checking layer @cag
+
+
+        foreach (Collider2D collider in AttackRangeLimit)
         {
-            // Play an attack animation
-            animator.SetTrigger("Attack");
-
-            //Bu attack range mouse bunun disindayken attack komutu calismiyor.
-            Collider2D[] AttackRangeLimit = Physics2D.OverlapCircleAll(transform.position, _AttackRange);
-            //buda mousein kendi icindeki alani attack yapmak icin. buyuk bir alan varki oyuncu biraz kenara bile tiklasa dusmana atak yapsin
-            Collider2D[] enemiesInRangeOfMouse = Physics2D.OverlapCircleAll(worldPositionofMouse, mouseSnapRange, _EnemyLayers); // center, radius, checking layer @cag
-
-
-            foreach (Collider2D collider in AttackRangeLimit)
+            //Burda hem rangein hemde mouse alaninin icinde mi diye kontrol ediyor.
+            if (enemiesInRangeOfMouse.Contains(collider))
             {
-                //Burda hem rangein hemde mouse alaninin icinde mi diye kontrol ediyor.
-                if (enemiesInRangeOfMouse.Contains(collider))
-                {
-                    EnemyHealth enemyHealth = collider.gameObject.GetComponent<EnemyHealth>();
-                    enemyHealth.GetHit(AttackDamage, this.gameObject);
-                }
-            }   
-
-            if (AttackRangeLimit.Length <= 0) //Circle carpmazsa 
-            {
-                Debug.Log("No Enemies in Range");
+                EnemyHealth enemyHealth = collider.gameObject.GetComponent<EnemyHealth>();
+                enemyHealth.GetHit(AttackDamage, this.gameObject);
             }
         }
+
+        if (AttackRangeLimit.Length <= 0) //Circle carpmazsa 
+        {
+            Debug.Log("No Enemies in Range");
+        }
     }
+
+    private Vector2 GetCollusionPoint(Vector2 mousePosition)
+    {
+        Vector2 center = transform.position;
+        Vector2 direction = mousePosition - center;
+        float distance = Mathf.Min(direction.magnitude, _AttackRange);
+
+        Vector2 collisionPoint = center + direction.normalized * distance;
+
+        return collisionPoint;
+    }
+
 
     private void OnDrawGizmos()
     {
@@ -75,5 +87,7 @@ public class PlayerCombat : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, _AttackRange);
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(worldPositionofMouse, mouseSnapRange);
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(GetCollusionPoint(worldPositionofMouse), mouseSnapRange);
     }
 }
