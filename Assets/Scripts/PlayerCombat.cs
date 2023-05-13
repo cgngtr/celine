@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerCombat : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class PlayerCombat : MonoBehaviour
     [Range(0, 5f)][SerializeField] private float _AttackRange = 1.4f; //mouseun icinde olupta attack yapabilecegii maksimum menzil
     [Range(0, 2f)][SerializeField] private float mouseSnapRange = 0.2f; //mouseun etrafindaki alan
     [Range(0, 2f)][SerializeField] private float deflectRange = 0.5f; //Deflect alani
+    [Range(0, 20f)][SerializeField] private float deflectSpeedMultiplier = 10f;
+    [Range(0, 20f)][SerializeField] private float additonalDeflectForce = 4f;
     [SerializeField] private LayerMask enemyLayers;
     [SerializeField] private LayerMask bulletLayers;
     [Range(0, 10)][SerializeField] private int AttackDamage;
@@ -76,6 +79,8 @@ public class PlayerCombat : MonoBehaviour
     {
         // Play a deflect animation
         //animator.SetTrigger("Deflect");
+
+
         //Bu attack range mouse bunun disindayken attack komutu calismiyor.
         Collider2D[] AttackRangeLimit = Physics2D.OverlapCircleAll(transform.position, _AttackRange);
 
@@ -87,8 +92,21 @@ public class PlayerCombat : MonoBehaviour
             //Burda hem rangein hemde mouse alaninin icinde mi diye kontrol ediyor.
             if (bulletsInRangeOfMouse.Contains(collider))
             {
-                EnemyHealth enemyHealth = collider.gameObject.GetComponent<EnemyHealth>();
-                enemyHealth.GetDeflect(AttackDamage, this.gameObject.transform.position);
+                GameObject bullet = collider.gameObject;
+
+                if (bullet.CompareTag("Bullet"))
+                {
+                    Rigidbody2D bulletRigidbody = bullet.GetComponent<Rigidbody2D>();
+
+                    bulletRigidbody.velocity = -bulletRigidbody.velocity;
+
+                    bullet.transform.Rotate(Vector3.forward, 180f);
+                    Vector3 theScale = bullet.transform.localScale;
+                    theScale.x *= -1;
+                    bullet.transform.localScale = theScale;
+
+                    bulletRigidbody.velocity *= additonalDeflectForce;
+                }
             }
         }
 
@@ -99,7 +117,9 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    private Vector2 GetCollusionPoint(Vector2 mousePositionWorld)
+
+
+    private Vector3 GetCollusionPoint(Vector2 mousePositionWorld)
     {
         Vector2 center = transform.position;
         float distance = Mathf.Min(direction.magnitude, _AttackRange);
@@ -119,6 +139,6 @@ public class PlayerCombat : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(worldPositionofMouse, mouseSnapRange);
         Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(GetCollusionPoint(worldPositionofMouse), mouseSnapRange);
+        Gizmos.DrawWireSphere(GetCollusionPoint(worldPositionofMouse), deflectRange);
     }
 }

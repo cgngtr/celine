@@ -9,7 +9,6 @@ public class EnemyHealth : MonoBehaviour
     [Range(1, 5)][SerializeField] float KnockbackForce = 3;  //geri atlama kuveti
     Rigidbody2D rb = new Rigidbody2D();
     [SerializeField] private bool Armored = false; //ilerde armored enemy koyariz diye
-    public bool isBullet = false;
 
     public void Awake()
     {
@@ -31,12 +30,6 @@ public class EnemyHealth : MonoBehaviour
                 KnockBack(Attacker, Damage);
             }
         }
-    }
-
-    public void GetDeflect(int Damage, Vector3 Attacker)
-    {
-        Debug.Log("Get Deflected");
-        KnockBack(Attacker, 6);
     }
 
     public void KnockBack(Vector3 attackerPosition, int Damage)
