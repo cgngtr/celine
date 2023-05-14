@@ -21,7 +21,7 @@ public class PlayerCombat : MonoBehaviour
     private void Start()
     {
         animator = GetComponent<Animator>();
-        
+
     }
 
     void Update()
@@ -119,10 +119,10 @@ public class PlayerCombat : MonoBehaviour
 
 
 
-    private Vector3 GetCollusionPoint(Vector2 mousePositionWorld)
+    private Vector2 GetCollusionPoint(Vector2 mousePosition)
     {
         Vector2 center = transform.position;
-        Vector2 direction = mousePositionWorld - center;
+        Vector2 direction = mousePosition - center;
         float distance = Mathf.Min(direction.magnitude, _AttackRange);
 
         Vector2 collisionPoint = center + direction.normalized * distance;
@@ -133,12 +133,12 @@ public class PlayerCombat : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        //burasi editorde attack range ve mouse rangi gormek icin kodlari bulunduruyor
+        //burasi editorde attack range ve mouse range'i gormek icin kodlari bulunduruyor
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(transform.position, _AttackRange);
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(worldPositionofMouse, mouseSnapRange);
         Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(GetCollusionPoint(worldPositionofMouse), deflectRange);
+        Gizmos.DrawWireSphere(GetCollusionPoint(worldPositionofMouse), mouseSnapRange);
     }
 }
