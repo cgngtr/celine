@@ -102,7 +102,7 @@ public class PlayerCombat : MonoBehaviour
 
                     bullet.transform.Rotate(Vector3.forward, 180f);
                     Vector3 theScale = bullet.transform.localScale;
-                    theScale.x *= -1;
+                    theScale.y *= -1;
                     bullet.transform.localScale = theScale;
 
                     bulletRigidbody.velocity *= additonalDeflectForce;
