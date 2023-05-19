@@ -61,14 +61,15 @@ public class PlayerCombat : MonoBehaviour
 
         foreach (Collider2D collider in AttackRangeLimit)
         {
-            //Burda hem rangein hemde mouse alaninin icinde mi diye kontrol ediyor.
+            //Burda hem rangein hem de mouse alaninin icinde mi diye kontrol ediyor.
             if (enemiesInRangeOfMouse.Contains(collider))
             {
                 EnemyHealth enemyHealth = collider.gameObject.GetComponent<EnemyHealth>();
                 enemyHealth.GetHit(AttackDamage, this.gameObject.transform.position);
+                return 1;
             }
         }
-
+            
         if (AttackRangeLimit.Length <= 0) //Circle carpmazsa 
         {
             Debug.Log("No Enemies in Range");
@@ -140,5 +141,13 @@ public class PlayerCombat : MonoBehaviour
         Gizmos.DrawWireSphere(worldPositionofMouse, mouseSnapRange);
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(GetCollusionPoint(worldPositionofMouse), mouseSnapRange);
+    }
+
+    public void DashOnHit()
+    {
+        if(Attack())
+        {
+
+        }
     }
 }

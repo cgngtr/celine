@@ -9,6 +9,7 @@ public class EnemyHealth : MonoBehaviour
     [Range(1, 5)][SerializeField] float KnockbackForce = 3;  //geri atlama kuveti
     Rigidbody2D rb = new Rigidbody2D();
     [SerializeField] private bool Armored = false; //ilerde armored enemy koyariz diye
+    private bool isAirborne;
 
     public void Awake()
     {
