@@ -7,12 +7,16 @@ using UnityEngine.UIElements;
 public class PlayerCombat : MonoBehaviour
 {
     private Animator animator;
+    public Rigidbody2D rb;
     [Range(0, 5f)][SerializeField] private float _AttackRange = 1.4f; //mouseun icinde olupta attack yapabilecegii maksimum menzil
     [Range(0, 2f)][SerializeField] private float mouseSnapRange = 0.2f; //mouseun etrafindaki alan
     [Range(0, 2f)][SerializeField] private float deflectRange = 0.5f; //Deflect alani
     [Range(0, 20f)][SerializeField] private float deflectSpeedMultiplier = 10f;
     [Range(0, 20f)][SerializeField] private float additonalDeflectForce = 4f;
+    [Range(0, 20f)][SerializeField] private float dashSpeed = 4f;
+    
     [SerializeField] private LayerMask enemyLayers;
+    [SerializeField] private LayerMask droneLayers;
     [SerializeField] private LayerMask bulletLayers;
     [Range(0, 10)][SerializeField] private int AttackDamage;
 
@@ -21,6 +25,7 @@ public class PlayerCombat : MonoBehaviour
     private void Start()
     {
         animator = GetComponent<Animator>();
+        rb = GetComponent<Rigidbody2D>();
 
     }
 
@@ -64,12 +69,19 @@ public class PlayerCombat : MonoBehaviour
             //Burda hem rangein hem de mouse alaninin icinde mi diye kontrol ediyor.
             if (enemiesInRangeOfMouse.Contains(collider))
             {
+                if (collider.gameObject.CompareTag("Enemy") && collider.transform.gameObject.layer == 8)
+                {
+                    DashOnHit();
+                }
+                else if (collider.gameObject.CompareTag("Enemy"))
+                { 
                 EnemyHealth enemyHealth = collider.gameObject.GetComponent<EnemyHealth>();
                 enemyHealth.GetHit(AttackDamage, this.gameObject.transform.position);
-                return 1;
+                }
+                
             }
         }
-            
+
         if (AttackRangeLimit.Length <= 0) //Circle carpmazsa 
         {
             Debug.Log("No Enemies in Range");
@@ -110,44 +122,36 @@ public class PlayerCombat : MonoBehaviour
                 }
             }
         }
-
-
-        if (AttackRangeLimit.Length <= 0) //Circle carpmazsa 
+    }
+        public void DashOnHit()
         {
-            Debug.Log("No Bullets in Range");
+            rb.velocity = transform.up * dashSpeed;
+            Debug.Log("Hit.");
         }
-    }
 
 
 
-    private Vector2 GetCollusionPoint(Vector2 mousePosition)
-    {
-        Vector2 center = transform.position;
-        Vector2 direction = mousePosition - center;
-        float distance = Mathf.Min(direction.magnitude, _AttackRange);
-
-        Vector2 collisionPoint = center + direction.normalized * distance;
-
-        return collisionPoint;
-    }
-
-
-    private void OnDrawGizmos()
-    {
-        //burasi editorde attack range ve mouse range'i gormek icin kodlari bulunduruyor
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(transform.position, _AttackRange);
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(worldPositionofMouse, mouseSnapRange);
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(GetCollusionPoint(worldPositionofMouse), mouseSnapRange);
-    }
-
-    public void DashOnHit()
-    {
-        if(Attack())
+        private Vector2 GetCollusionPoint(Vector2 mousePosition)
         {
+            Vector2 center = transform.position;
+            Vector2 direction = mousePosition - center;
+            float distance = Mathf.Min(direction.magnitude, _AttackRange);
 
+            Vector2 collisionPoint = center + direction.normalized * distance;
+
+            return collisionPoint;
         }
-    }
+
+
+        private void OnDrawGizmos()
+        {
+            //burasi editorde attack range ve mouse range'i gormek icin kodlari bulunduruyor
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireSphere(transform.position, _AttackRange);
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(worldPositionofMouse, mouseSnapRange);
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(GetCollusionPoint(worldPositionofMouse), mouseSnapRange);
+        }
+    
 }
