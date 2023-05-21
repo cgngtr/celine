@@ -7,27 +7,28 @@ public class PlayerController : MonoBehaviour
 	private Rigidbody2D _Rigid2D = new Rigidbody2D(); //YOk ARTIIK RIGIDBODY!!! @Han
 
     [Range(0, .3f)][SerializeField] private float _MovementSmoothing = .05f; //Daha Yumusak Gitmesini Sagliyo bu deger. @Han
-    [Range(0, 1f)][SerializeField] private float _MaxCoyoteTimeValue = 0.3f;
+    private float _MaxCoyoteTimeValue = 0.3f;
     [SerializeField] private LayerMask _GroundLayers; //Ground Layerlari
-    [SerializeField] private Transform m_GroundCheck; 
+    private Transform m_GroundCheck; 
 
 
     private Vector3 _Velocity = Vector3.zero; //bu neden burda bilmiyom bosver bunu. @Han
     public bool _Grounded; //Karakterin Ground Layer  olan objelere Dokunup Dokunmadigini Gosteren Deger. @Han
-    public bool _CoyoteTime; //coyote time 
+    private bool _CoyoteTime; //coyote time 
     private float coyoteTimeValue = 0.3f;
 
     #region Dash Values
-    [SerializeField] private bool canDash = true;
+    private bool canDash = true;
     private bool isDashing;
-    [SerializeField] private float dashingPower = 24f;
-    [SerializeField] private float dashingTime = 0.2f;
-    [SerializeField] private float dashingCooldown = 1f;
+    private float dashingPower = 24f;
+    private float dashingTime = 0.2f;
+    private float dashingCooldown = 1f;
     #endregion
 
     void Start()
     {
         _Rigid2D = GetComponent<Rigidbody2D>();
+        m_GroundCheck = transform.GetChild(0);
     }
 
     private void Update()
