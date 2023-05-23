@@ -9,7 +9,12 @@ public class PlayerController : MonoBehaviour
     [Range(0, .3f)][SerializeField] private float _MovementSmoothing = .05f; //Daha Yumusak Gitmesini Sagliyo bu deger. @Han
     private float _MaxCoyoteTimeValue = 0.3f;
     [SerializeField] private LayerMask _GroundLayers; //Ground Layerlari
-    private Transform m_GroundCheck; 
+    private Transform m_GroundCheck;
+    [SerializeField] private Transform wallCheck;
+    [SerializeField] private LayerMask wallLayer;
+    private bool isWallSliding;
+    private float wallSlidingSpeed = 2f;
+
 
 
     private Vector3 _Velocity = Vector3.zero; //bu neden burda bilmiyom bosver bunu. @Han
@@ -37,6 +42,9 @@ public class PlayerController : MonoBehaviour
         {
             return;
         }
+
+        PlayerMovement playerMovement = new PlayerMovement();
+        WallSlide(playerMovement);
     }
 
     private void FixedUpdate()
@@ -158,4 +166,24 @@ public class PlayerController : MonoBehaviour
         canDash = true;
 
     }
+
+    private bool IsWalled()
+    {
+        return Physics2D.OverlapCircle(wallCheck.position, 0.2f, wallLayer);
+    }
+
+
+    private void WallSlide(PlayerMovement playerMovement)
+    {
+        if(IsWalled() && !_Grounded && playerMovement.horizontalMove != 0f)
+        {
+            isWallSliding = true;
+            _Rigid2D.velocity = new Vector2(_Rigid2D.velocity.x, Mathf.Clamp(_Rigid2D.velocity.y, -wallSlidingSpeed, float.MaxValue));
+        }
+        else
+        {
+            isWallSliding = false;
+        }
+    }
+
 }

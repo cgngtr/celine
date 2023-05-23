@@ -9,7 +9,7 @@ public class PlayerMovement : MonoBehaviour
     private PlayerCombat pCombat;
 
     #region Horizontal Movement Values
-    float horizontalMove = 0f;
+    public float horizontalMove = 0f;
     [Range(0, 100f)][SerializeField] private float runSpeed = 30f;
     #endregion
 
@@ -18,7 +18,6 @@ public class PlayerMovement : MonoBehaviour
     private int JumpCount;
     private int _MaxJumpCount = 2;
     #endregion
-
 
 
     void Start()
@@ -58,6 +57,14 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private void WallSlide()
+    {
+            
+
+
+
+    }
+
     private void FixedUpdate()
     {
         // bu kodun animasyon manager adli scriptin icinde bulunmasi gerekiyor
@@ -67,5 +74,8 @@ public class PlayerMovement : MonoBehaviour
         horizontalMove = Input.GetAxisRaw("Horizontal") * runSpeed * Time.deltaTime;
         if(!pCombat.isAttacking) {_playerController.Move(horizontalMove);}
     }
+
+
+
     
 }
