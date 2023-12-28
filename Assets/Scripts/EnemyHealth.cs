@@ -13,6 +13,8 @@ public class EnemyHealth : MonoBehaviour
     public void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        if (this.gameObject.CompareTag("Drone")) { HealthPoints = 10; } //CAGAAAAAAAAAANNNNNNNNNNN okuduysan guzel bunu istersen 1 e cevirebilirsin mekanik denemek icin yaptim bunu
+
     }
     public void GetHit(int Damage, Vector3 Attacker)
     {
@@ -25,7 +27,7 @@ public class EnemyHealth : MonoBehaviour
         }
         else
         {
-            if (!Armored) {
+            if (!Armored && !this.gameObject.CompareTag("Drone")) {
                 Debug.Log("knockbacked");
                 KnockBack(Attacker, Damage);
             }

@@ -7,26 +7,33 @@ using UnityEngine.UIElements;
 public class PlayerCombat : MonoBehaviour
 {
     private Animator animator;
-    [Range(0, 5f)][SerializeField] private float _AttackRange = 1.4f; //mouseun icinde olupta attack yapabilecegii maksimum menzil
-    [Range(0, 2f)][SerializeField] private float mouseSnapRange = 0.2f; //mouseun etrafindaki alan
-    [Range(0, 2f)][SerializeField] private float deflectRange = 0.5f; //Deflect alani
+    private Rigidbody2D rb;
+    private float _AttackRange = 1.5f; //mouseun icinde olupta attack yapabilecegii maksimum menzil
+    private float mouseSnapRange = 0.6f; //mouseun etrafindaki alan
+    private float deflectRange = 0.7f; //Deflect alani
     [Range(0, 20f)][SerializeField] private float deflectSpeedMultiplier = 10f;
     [Range(0, 20f)][SerializeField] private float additonalDeflectForce = 4f;
+    [Range(0, 200f)][SerializeField] private float dashAttackSpeed = 4f;
+    private Vector3 xnf;
+    private Vector3 positionBehindEnemy;
+
     [SerializeField] private LayerMask enemyLayers;
     [SerializeField] private LayerMask bulletLayers;
     [Range(0, 10)][SerializeField] private int AttackDamage;
 
-    public Vector3 worldPositionofMouse;
+    private Vector3 worldPositionofMouse;
+    public bool isAttacking;
+    private bool positionBehindEnemyBoolean;
 
     private void Start()
     {
         animator = GetComponent<Animator>();
+        rb = GetComponent<Rigidbody2D>();
 
     }
 
     void Update()
     {
-
 
         // Get the position of the mouse in screen space
         Vector3 mousePosition = Input.mousePosition;
@@ -38,6 +45,9 @@ public class PlayerCombat : MonoBehaviour
         worldPositionofMouse = Camera.main.ScreenToWorldPoint(mousePosition);
 
 
+        Collider2D[] DroneCircle = Physics2D.OverlapCircleAll(positionBehindEnemy, 0.4f);
+
+        if (positionBehindEnemyBoolean) { foreach (Collider2D collider in DroneCircle) { if (collider.gameObject.CompareTag("Player")) { positionBehindEnemyBoolean = false; isAttacking = false; rb.velocity = Vector2.zero; } } }
 
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
@@ -61,11 +71,22 @@ public class PlayerCombat : MonoBehaviour
 
         foreach (Collider2D collider in AttackRangeLimit)
         {
-            //Burda hem rangein hemde mouse alaninin icinde mi diye kontrol ediyor.
+            //Burda hem rangein hem de mouse alaninin icinde mi diye kontrol ediyor.
             if (enemiesInRangeOfMouse.Contains(collider))
             {
-                EnemyHealth enemyHealth = collider.gameObject.GetComponent<EnemyHealth>();
-                enemyHealth.GetHit(AttackDamage, this.gameObject.transform.position);
+                if (collider.gameObject.CompareTag("Drone")) {
+                    Debug.Log("Enemy Drone Hit");
+
+                    GetPositionBehindEnemy(collider.transform, 2);
+                    EnemyHealth enemyHealth = collider.gameObject.GetComponent<EnemyHealth>();
+                    enemyHealth.GetHit(AttackDamage, this.gameObject.transform.position);
+                }
+                else
+                {
+                    EnemyHealth enemyHealth = collider.gameObject.GetComponent<EnemyHealth>();
+                    enemyHealth.GetHit(AttackDamage, this.gameObject.transform.position);
+                }
+
             }
         }
 
@@ -102,22 +123,55 @@ public class PlayerCombat : MonoBehaviour
 
                     bullet.transform.Rotate(Vector3.forward, 180f);
                     Vector3 theScale = bullet.transform.localScale;
-                    theScale.x *= -1;
+                    theScale.y *= -1;
                     bullet.transform.localScale = theScale;
 
                     bulletRigidbody.velocity *= additonalDeflectForce;
                 }
             }
         }
-
-
-        if (AttackRangeLimit.Length <= 0) //Circle carpmazsa 
-        {
-            Debug.Log("No Bullets in Range");
-        }
     }
 
+    //sorma kanka aciklamasi cok zor
+    public void GetPositionBehindEnemy(Transform enemyTransform, float distanceBehind)
+    {
+        //burasi klasik self explanatory
+        positionBehindEnemyBoolean = true;
+        Vector3 direction = (this.transform.position - enemyTransform.position).normalized;
+        positionBehindEnemy = enemyTransform.position - (direction * distanceBehind);
 
+        #region ColliderDisable
+
+        //collideri kapatiyorum icinden gecebileyim diye
+        Collider2D pCollider = this.gameObject.GetComponent<BoxCollider2D>();
+        Collider2D eCollider = enemyTransform.gameObject.GetComponent<BoxCollider2D>();
+        Physics2D.IgnoreCollision(pCollider, eCollider, true);
+        #endregion
+
+        Vector3 force = positionBehindEnemy - this.transform.position;
+
+        //z eksenine kuvveti kesiyorumki ebenin amina ucmasin
+        force.z = 0f; 
+        isAttacking = true;
+        StartCoroutine(FailSafe(0.25f));
+        rb.velocity = Vector2.zero;
+        rb.AddForce(force * dashAttackSpeed, ForceMode2D.Impulse);
+
+        //bu gizmoslar icin
+        xnf = positionBehindEnemy;
+    }
+
+    private IEnumerator FailSafe(float delay)
+    {
+        //bazi durumlarda karakterin arkasindaki lokasyona carpmiyor o yuzden failsafe mekanizmasi
+        yield return new WaitForSeconds(delay);
+        if (isAttacking == false) { yield break; }
+        else
+        {
+            isAttacking = false;
+            rb.velocity = Vector2.zero;
+        }
+    }
 
     private Vector2 GetCollusionPoint(Vector2 mousePosition)
     {
@@ -140,5 +194,8 @@ public class PlayerCombat : MonoBehaviour
         Gizmos.DrawWireSphere(worldPositionofMouse, mouseSnapRange);
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(GetCollusionPoint(worldPositionofMouse), mouseSnapRange);
+        Gizmos.color = Color.white;
+        Gizmos.DrawWireSphere(xnf, 0.4f);
     }
+
 }
